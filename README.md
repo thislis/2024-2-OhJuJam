@@ -1,3 +1,6 @@
 # 2024-2-OhJuJam  
 
-*OPEN*
+*OPEN*  
+
+#How To Run?  
+uvicorn backend.main:app --reload
