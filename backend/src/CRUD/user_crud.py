@@ -1,7 +1,7 @@
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
-from schema.user_schema import UserCreate
-from database.models import User
+from backend.src.schema.user_schema import UserCreate
+from backend.database.models import User
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 

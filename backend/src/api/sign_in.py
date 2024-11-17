@@ -8,10 +8,10 @@ from jose import jwt
 from sqlalchemy.orm import Session
 from starlette import status
 
-from CRUD.user_crud import pwd_context
-from CRUD import user_crud
-from schema import user_schema
-from database.database import get_db
+from backend.src.CRUD.user_crud import pwd_context
+import backend.src.CRUD.user_crud as user_crud
+import backend.src.schema.user_schema as user_schema
+from backend.database.database import get_db
 
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24
 SECRET_KEY = secrets.token_hex(32)

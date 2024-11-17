@@ -3,9 +3,9 @@ from fastapi import Depends
 from sqlalchemy.orm import Session
 from starlette import status
 
-from database.database import get_db
-from CRUD import user_crud
-from schema import user_schema
+from backend.database.database import get_db
+import backend.src.CRUD.user_crud as user_crud
+import backend.src.schema.user_schema as user_schema
 
 router = APIRouter(
     prefix="/account",
