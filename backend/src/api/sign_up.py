@@ -9,6 +9,7 @@ from schema import user_schema
 
 router = APIRouter(
     prefix="/account",
+    tags=["sign_up"]
 )
 
 

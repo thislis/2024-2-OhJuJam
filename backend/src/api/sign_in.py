@@ -19,6 +19,7 @@ ALGORITHM = "HS256"
 
 router = APIRouter(
     prefix="/account",
+    tags=["sign_in"]
 )
 
 @router.post("/login", response_model=user_schema.Token)
