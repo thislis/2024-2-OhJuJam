@@ -3,4 +3,3 @@
 *OPEN*  
 
 #How To Run?  
-uvicorn backend.main:app --reload
