@@ -14,7 +14,7 @@ class Door(Base):
     __tablename__= "Door"
 
     id = Column(Integer, primary_key=True, index=True)
-    code = Column(Integer, unique=True)
+    room_num = Column(Integer, unique=True, nullable=True)
     opened = Column(Integer, unique=True)
 
 
