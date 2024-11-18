@@ -1,6 +1,6 @@
 from fastapi import FastAPI
-from backend.src.api import sign_in
-from backend.src.api import sign_up
+from src.api import sign_in
+from src.api import sign_up
 from starlette.middleware.cors import CORSMiddleware
 
 app = FastAPI()

@@ -3,4 +3,5 @@
 *OPEN*  
 
 #How To Run?  
-uvicorn backend.main:app --reload
+Backend: cd backend -> uvicorn backend.main:app --reload
+Frontend: cd frontend -> npm run dev

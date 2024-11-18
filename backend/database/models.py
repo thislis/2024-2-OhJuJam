@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import relationship
-from backend.database.database import Base
+from database.database import Base
 
 
 class Door(Base):
@@ -16,7 +16,6 @@ class User(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, unique=True, nullable=False)
-    pw = Column(String)
     game_result = relationship("Game_result")
 
 

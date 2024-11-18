@@ -1,15 +1,9 @@
-from passlib.context import CryptContext
 from sqlalchemy.orm import Session
-from backend.src.schema.user_schema import UserCreate
-from backend.database.models import User
-
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
+from src.schema.user_schema import UserCreate
+from database.models import User
 
 def create_user(db: Session, user_create: UserCreate):
-    db_user = User(name=user_create.username,
-                   pw=pwd_context.hash(user_create.password1)
-                )
+    db_user = User(name=user_create.username)
     db.add(db_user)
     db.commit()
 
