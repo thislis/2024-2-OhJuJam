@@ -16,3 +16,5 @@ router = APIRouter(
 @router.post("/create", status_code=status.HTTP_204_NO_CONTENT)
 def user_create(_user_create: user_schema.UserCreate, db: Session = Depends(get_db)):
     user_crud.create_user(db=db, user_create=_user_create)
+
+    return {"message": "Success"}

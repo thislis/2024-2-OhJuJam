@@ -14,15 +14,14 @@ router = APIRouter(
 )
 
 @router.get("/load/{door_num}")
-def load_main_door(db: Session = Depends(get_db)):
+def load_door(db: Session = Depends(get_db)):
     door_num = door_num
     main_door_state = db.query(Door).filter(Door.room_num == door_num).first()
     main_door_state = main_door_state.__asdict()
     return {"main_door_state": main_door_state["opened"]}
 
 @router.post("/open")
-def update_main_door(form_data, db: Session = Depends(get_db)):
-    door_num = door_num
+def update_door(form_data, db: Session = Depends(get_db)):
     door = door_crud.get_door(db, form_data.doornum)
     if not door:
         raise HTTPException(
@@ -31,3 +30,9 @@ def update_main_door(form_data, db: Session = Depends(get_db)):
             headers={"WWW-Authenticate": "Bearer"},
         )
     door_crud.update_door(db, form_data.doornum, form_data.dooropen)
+
+    return {"message": "Success"}
+
+@router.post("/create")
+def create_door(door_create_: door_crud.DoorCreate, db: Session = Depends(get_db)):
+    door_crud.create_door(db, door_create=door_create_)
