@@ -24,6 +24,8 @@ def create_door(db: Session, door_create: DoorCreate):
     db.add(db_door)
     db.commit()
 
+    return door_num
+
 
 def get_existing_door(db: Session, door_create: DoorCreate):
     return db.query(Door).filter(
