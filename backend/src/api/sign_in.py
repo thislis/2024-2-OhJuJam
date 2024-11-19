@@ -14,12 +14,11 @@ router = APIRouter(
 @router.post("/login")
 def login(form_data, db: Session = Depends(get_db)):
 
-    # check user and password
     user = user_crud.get_user(db, form_data.username)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username",
+            detail="Incorrect or Not exist username",
             headers={"WWW-Authenticate": "Bearer"},
         )
 
