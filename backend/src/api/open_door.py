@@ -5,6 +5,7 @@ from starlette import status
 from database.database import get_db
 
 from database.models import Door
+import src.CRUD.door_crud as door_crud
 
 
 router = APIRouter(
@@ -12,11 +13,21 @@ router = APIRouter(
     tags=["door_game"]
 )
 
-@router.get("/main/load")
+@router.get("/load/{door_num}")
 def load_main_door(db: Session = Depends(get_db)):
-    main_door_state = db.query(Door).filter(Door.room_num == 0).first()
+    door_num = door_num
+    main_door_state = db.query(Door).filter(Door.room_num == door_num).first()
     main_door_state = main_door_state.__asdict()
     return {"main_door_state": main_door_state["opened"]}
 
-@router.post("/main/open")
+@router.post("/open")
 def update_main_door(form_data, db: Session = Depends(get_db)):
+    door_num = door_num
+    door = door_crud.get_door(db, form_data.doornum)
+    if not door:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect or Not exist number of the door",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    door_crud.update_door(db, form_data.doornum, form_data.dooropen)

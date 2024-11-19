@@ -1,11 +1,12 @@
 from fastapi import FastAPI
-from src.api import sign_in
-from src.api import sign_up
 from starlette.middleware.cors import CORSMiddleware
+
+from src.api import sign_in, sign_up, open_door
 
 app = FastAPI()
 app.include_router(sign_up.router)
 app.include_router(sign_in.router)
+app.include_router(open_door.router)
 
 app.add_middleware(
     CORSMiddleware,
