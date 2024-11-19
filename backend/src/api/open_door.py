@@ -36,3 +36,5 @@ def update_door(form_data, db: Session = Depends(get_db)):
 @router.post("/create")
 def create_door(door_create_: door_crud.DoorCreate, db: Session = Depends(get_db)):
     door_crud.create_door(db, door_create=door_create_)
+    
+    return {"message": "Success"}
