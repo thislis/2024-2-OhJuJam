@@ -21,4 +21,5 @@ def get_door(db: Session, door_num: int):
 def update_door(db: Session, door_num: int, door_open: int):
     value = door_open * db.query(Door).filter_by(door_num=door_num).opened
     db.query(Door).filter_by(door_num=door_num).update({"opened": value})
+    db.commit()
     
