@@ -41,8 +41,7 @@
     </form>
 
     <p class="read-the-docs">
-        Click on the button, And choose that door is opened or reverse opened!<br
-        />
+        Click on the button, And choose that door is opened or reverse opened!<br/>
         Choose your action, check if your choice is right!
     </p>
 </main>
