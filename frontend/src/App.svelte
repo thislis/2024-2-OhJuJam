@@ -1,4 +1,6 @@
 <script>
+  import { onMount } from 'svelte';
+
   const request_post = async (endpoint, data) => {
       const resp = await fetch(`http://localhost:8000${endpoint}`, {
           method: 'POST',
@@ -11,7 +13,7 @@
   };
 
   const request_get = async () => {
-      const resp = await fetch(`http://localhost:8000/load`);
+      const resp = await fetch(`http://localhost:8000/door/load`);
       if (!resp.ok) { // 응답이 성공적이지 않을 경우 오류 처리
           throw new Error(`HTTP error! status: ${resp.status}`);
       }
@@ -26,19 +28,18 @@
   };
 
   const post_action = (event) => {
-      console.log(event)
-      event.preventDefault()
+      event.preventDefault();
       const get_radio = document.getElementsByName('product');
       let your_action;
       get_radio.forEach((radio) => {
           if (radio.checked) {
-              your_action = radio.value;
-              console.log(your_action);
+              your_action = parseInt(radio.value); // 정수형으로 변환
           }
       });
 
       if (your_action !== undefined) {
-          request_post('/open', { your_action }).then(response => {
+          // 'name'과 'win'을 포함한 데이터 전송
+          request_post('/door/open', { your_action, name, win }).then(response => {
               console.log("Response from server:", response.message);
           }).catch(error => {
               console.error("Error:", error);
@@ -49,14 +50,58 @@
   };
 
   let state = "";
+  let win = 0;
 
   const get_door_state = async () => {
       try {
           state = await request_get(); // 서버에서 상태를 가져옴
           console.log("Door state:", state); // 상태를 콘솔에 출력
+
+          if ((choice % 2 === 1 && state === "Opened") || (choice % 2 === 0 && state === "Reverse Opened")) {
+            win = win + 1
+          }
+
       } catch (error) {
           console.error("Error fetching door state:", error); // 오류 발생 시 로그
       }
+  };
+
+  let name = "";
+
+  const update_ranking = async (name, win) => {
+    if (name) {
+        request_post('/ranking/update', { name, win }).then(response => {
+            console.log("Response from server:", response.message);
+        }).catch(error => {
+            console.error("Error:", error);
+        });
+    } else {
+        console.log("No NAME?");
+    }
+  };
+
+  let rankings = [];
+  let showRankings = false;
+
+  const fetchRankings = async () => {
+    const response = await fetch('http://localhost:8000/ranking/load');
+    if (response.ok) {
+      const data = await response.json();
+      rankings = Object.values(data).map((rank, index) => ({
+        rank: index + 1,
+        name: rank.name,
+        win: rank.win
+      }));
+    }
+  };
+
+  const toggleRankings = () => {
+    if (showRankings) {
+      rankings = [];
+    } else {
+      fetchRankings();
+    }
+    showRankings = !showRankings;
   };
 </script>
 
@@ -100,9 +145,40 @@
   </p>
 
   <button onclick={() => get_door_state()}>Is Door Opened?</button>
-  <p>{state}</p>
+  <p>{state}<br/>win: {win}</p>
+
+  <input bind:value={name}>
+  <button onclick={() => update_ranking(name)}>rank your winning!</button>
 
 </main>
+
+<button onclick={toggleRankings}>
+  {showRankings ? '순위표 숨기기' : '순위표 보기'}
+</button>
+
+{#if showRankings}
+  <div class="rankings">
+    <h2>순위표</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>순위</th>
+          <th>이름</th>
+          <th>승수</th>
+        </tr>
+      </thead>
+      <tbody>
+        {#each rankings as ranking}
+          <tr>
+            <td>{ranking.rank}</td>
+            <td>{ranking.name}</td>
+            <td>{ranking.win}</td>
+          </tr>
+        {/each}
+      </tbody>
+    </table>
+  </div>
+{/if}
 
 <style>
   input[name="product"] {
@@ -146,6 +222,12 @@
 
   /* 체크 시 버튼 모양 스타일*/
   input[name="product"]:checked + label {
-      background-color: red;
+      background-color: #000066;
+  }
+
+  .rankings {
+    margin: 20px 0;
+    border: 1px solid #ccc;
+    padding: 10px;
   }
 </style>
