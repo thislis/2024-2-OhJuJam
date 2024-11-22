@@ -1,11 +1,17 @@
 <script>
     let choice = $state(0);
     let room_num;
-    let your_action;
-
     const click = () => {
         choice += 1;
     };
+
+    const get_action = () => {
+        let your_action;
+        const get_radio = document.getElementsByClassName('product');
+        get_radio.forEach((radio) => {
+            console.dir(radio)
+        });
+    }
 </script>
 
 <main>
