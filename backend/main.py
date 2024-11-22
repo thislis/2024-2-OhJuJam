@@ -1,7 +1,7 @@
 from fastapi import FastAPI
+from pydantic import BaseModel
 from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import RedirectResponse
-
 
 app = FastAPI()
 door_opened = False
@@ -14,6 +14,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+class FormData(BaseModel):
+    your_action: int
+
 @app.get("/")
 async def root():
     return RedirectResponse(url="/main", status_code=302)
@@ -24,12 +27,17 @@ async def home():
 
 @app.get("/load")
 def load_door():
-    return {"door_state": door_opened}
+    if door_opened:
+        door_state = "Opened"
+    else:
+        door_state = "Reverse Opened"
+    return door_state
 
 @app.post("/open")
-def update_door(form_data):
-    if form_data.action == 1:
+def update_door(form_data: FormData):
+    global door_opened
+    if form_data.your_action == 1:
         door_opened = True
-    elif form_data.action == -1:
+    elif form_data.your_action == 2:
         door_opened = False
     return {"message": "Success"}
