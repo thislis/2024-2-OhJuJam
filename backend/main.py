@@ -2,10 +2,9 @@ from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import RedirectResponse
 
-from src.api import open_door
 
 app = FastAPI()
-app.include_router(open_door.router)
+door_opened = False
 
 app.add_middleware(
     CORSMiddleware,
@@ -22,3 +21,15 @@ async def root():
 @app.get("/main")
 async def home():
     return {"message": "Main"}
+
+@app.get("/load")
+def load_door():
+    return {"door_state": door_opened}
+
+@app.post("/open")
+def update_door(form_data):
+    if form_data.action == 1:
+        door_opened = True
+    elif form_data.action == -1:
+        door_opened = False
+    return {"message": "Success"}
