@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
 
   const request_post = async (endpoint, data) => {
-      const resp = await fetch(`http://localhost:8000${endpoint}`, {
+      const resp = await fetch(`https://gamja.hexa.pro${endpoint}`, {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json'
@@ -13,7 +13,7 @@
   };
 
   const request_get = async () => {
-      const resp = await fetch(`http://localhost:8000/door/load`);
+      const resp = await fetch(`https://gamja.hexa.pro/door/load`);
       if (!resp.ok) {
           throw new Error(`HTTP error! status: ${resp.status}`);
       }

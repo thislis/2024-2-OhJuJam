@@ -1,6 +1,3 @@
-from operator import itemgetter
-import json
-
 from fastapi import FastAPI
 from pydantic import BaseModel
 from starlette.middleware.cors import CORSMiddleware
