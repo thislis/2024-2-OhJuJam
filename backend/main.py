@@ -8,7 +8,6 @@ from starlette.responses import RedirectResponse
 
 app = FastAPI()
 door_opened = False
-ranking = []
 
 app.add_middleware(
     CORSMiddleware,
@@ -20,8 +19,6 @@ app.add_middleware(
 
 class FormData(BaseModel):
     your_action: int
-    name: str
-    win: int
 
 @app.get("/")
 async def root():
@@ -47,21 +44,3 @@ def update_door(form_data: FormData):
     elif form_data.your_action == 2:
         door_opened = False
     return {"message": "Success"}
-
-@app.post("/ranking/update")
-def update_ranking(form: FormData):
-    global ranking
-    ranking.append({"name": form.name, "win": form.win})
-    ranking = sorted(ranking, key=itemgetter('win'), reverse=True)
-    return {"message": "Success"}
-
-@app.get("/ranking/load")
-def loading_ranking():
-    ranker = {}
-    for i in range(1, 11):
-        global ranking
-        if i <= len(ranking):
-            ranker[f"rank {i}"] = ranking[i-1]
-        else:
-            ranker[f"rank {i}"] = {"name": "N/A", "win": 0}  # 기본값 추가
-    return json.dumps(ranker)

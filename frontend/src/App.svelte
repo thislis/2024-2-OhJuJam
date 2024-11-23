@@ -14,95 +14,52 @@
 
   const request_get = async () => {
       const resp = await fetch(`http://localhost:8000/door/load`);
-      if (!resp.ok) { // 응답이 성공적이지 않을 경우 오류 처리
+      if (!resp.ok) {
           throw new Error(`HTTP error! status: ${resp.status}`);
       }
       const result = await resp.text();
       return result;
   };
-  
+
   let choice = 0;
+  let name = "";
+  let state = "";
+  let showState = false; // 상태를 보여줄지 여부를 관리하는 변수
 
   const click = () => {
       choice += 1;
   };
 
-  const post_action = (event) => {
+  const post_action = async (event) => {
       event.preventDefault();
       const get_radio = document.getElementsByName('product');
       let your_action;
       get_radio.forEach((radio) => {
           if (radio.checked) {
-              your_action = parseInt(radio.value); // 정수형으로 변환
+              your_action = parseInt(radio.value);
           }
       });
 
       if (your_action !== undefined) {
-          // 'name'과 'win'을 포함한 데이터 전송
-          request_post('/door/open', { your_action, name, win }).then(response => {
-              console.log("Response from server:", response.message);
-          }).catch(error => {
-              console.error("Error:", error);
-          });
+          await request_post('/door/open', { your_action, name});
+          // 상태를 업데이트하지 않음
       } else {
           console.log("No action selected.");
       }
   };
-
-  let state = "";
-  let win = 0;
 
   const get_door_state = async () => {
       try {
           state = await request_get(); // 서버에서 상태를 가져옴
           console.log("Door state:", state); // 상태를 콘솔에 출력
 
-          if ((choice % 2 === 1 && state === "Opened") || (choice % 2 === 0 && state === "Reverse Opened")) {
-            win = win + 1
-          }
+          showState = true; // 버튼 클릭 시 상태를 보여줌
 
       } catch (error) {
-          console.error("Error fetching door state:", error); // 오류 발생 시 로그
+          console.error("Error fetching door state:", error);
       }
   };
 
-  let name = "";
-
-  const update_ranking = async (name, win) => {
-    if (name) {
-        request_post('/ranking/update', { name, win }).then(response => {
-            console.log("Response from server:", response.message);
-        }).catch(error => {
-            console.error("Error:", error);
-        });
-    } else {
-        console.log("No NAME?");
-    }
-  };
-
-  let rankings = [];
-  let showRankings = false;
-
-  const fetchRankings = async () => {
-    const response = await fetch('http://localhost:8000/ranking/load');
-    if (response.ok) {
-      const data = await response.json();
-      rankings = Object.values(data).map((rank, index) => ({
-        rank: index + 1,
-        name: rank.name,
-        win: rank.win
-      }));
-    }
-  };
-
-  const toggleRankings = () => {
-    if (showRankings) {
-      rankings = [];
-    } else {
-      fetchRankings();
-    }
-    showRankings = !showRankings;
-  };
 </script>
 
 <main>
@@ -143,42 +100,14 @@
       Click on the button, And choose that door is opened or reverse opened!<br/>
       Choose your action, check if your choice is right!
   </p>
-
-  <button onclick={() => get_door_state()}>Is Door Opened?</button>
-  <p>{state}<br/>win: {win}</p>
-
-  <input bind:value={name}>
-  <button onclick={() => update_ranking(name)}>rank your winning!</button>
+  <br/>
+  
+  <button onclick={() => get_door_state()}>Is Door Opened?</button><br/>
+  {#if showState} <!-- 상태가 보여야 할 때만 표시 -->
+  <p>{state}</p>
+{/if}
 
 </main>
-
-<button onclick={toggleRankings}>
-  {showRankings ? '순위표 숨기기' : '순위표 보기'}
-</button>
-
-{#if showRankings}
-  <div class="rankings">
-    <h2>순위표</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>순위</th>
-          <th>이름</th>
-          <th>승수</th>
-        </tr>
-      </thead>
-      <tbody>
-        {#each rankings as ranking}
-          <tr>
-            <td>{ranking.rank}</td>
-            <td>{ranking.name}</td>
-            <td>{ranking.win}</td>
-          </tr>
-        {/each}
-      </tbody>
-    </table>
-  </div>
-{/if}
 
 <style>
   input[name="product"] {
@@ -223,11 +152,5 @@
   /* 체크 시 버튼 모양 스타일*/
   input[name="product"]:checked + label {
       background-color: #000066;
-  }
-
-  .rankings {
-    margin: 20px 0;
-    border: 1px solid #ccc;
-    padding: 10px;
   }
 </style>
